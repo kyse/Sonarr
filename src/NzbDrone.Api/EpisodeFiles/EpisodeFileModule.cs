@@ -21,7 +21,7 @@ namespace NzbDrone.Api.EpisodeFiles
         private readonly IDiskProvider _diskProvider;
         private readonly IRecycleBinProvider _recycleBinProvider;
         private readonly ISeriesService _seriesService;
-        private readonly IQualityUpgradableSpecification _qualityUpgradableSpecification;
+        private readonly IUpgradableSpecification _upgradableSpecification;
         private readonly Logger _logger;
 
         public EpisodeFileModule(IBroadcastSignalRMessage signalRBroadcaster,
@@ -29,7 +29,7 @@ namespace NzbDrone.Api.EpisodeFiles
                              IDiskProvider diskProvider,
                              IRecycleBinProvider recycleBinProvider,
                              ISeriesService seriesService,
-                             IQualityUpgradableSpecification qualityUpgradableSpecification,
+                             IUpgradableSpecification upgradableSpecification,
                              Logger logger)
             : base(signalRBroadcaster)
         {
@@ -37,7 +37,7 @@ namespace NzbDrone.Api.EpisodeFiles
             _diskProvider = diskProvider;
             _recycleBinProvider = recycleBinProvider;
             _seriesService = seriesService;
-            _qualityUpgradableSpecification = qualityUpgradableSpecification;
+            _upgradableSpecification = upgradableSpecification;
             _logger = logger;
             GetResourceById = GetEpisodeFile;
             GetResourceAll = GetEpisodeFiles;
@@ -50,7 +50,7 @@ namespace NzbDrone.Api.EpisodeFiles
             var episodeFile = _mediaFileService.Get(id);
             var series = _seriesService.GetSeries(episodeFile.SeriesId);
 
-            return episodeFile.ToResource(series, _qualityUpgradableSpecification);
+            return episodeFile.ToResource(series, _upgradableSpecification);
         }
 
         private List<EpisodeFileResource> GetEpisodeFiles()
@@ -64,13 +64,14 @@ namespace NzbDrone.Api.EpisodeFiles
 
             var series = _seriesService.GetSeries(seriesId);
 
-            return _mediaFileService.GetFilesBySeries(seriesId).ConvertAll(f => f.ToResource(series, _qualityUpgradableSpecification));
+            return _mediaFileService.GetFilesBySeries(seriesId).ConvertAll(f => f.ToResource(series, _upgradableSpecification));
         }
 
         private void SetQuality(EpisodeFileResource episodeFileResource)
         {
             var episodeFile = _mediaFileService.Get(episodeFileResource.Id);
             episodeFile.Quality = episodeFileResource.Quality;
+            episodeFile.Language = episodeFileResource.Language;
             _mediaFileService.Update(episodeFile);
         }
 

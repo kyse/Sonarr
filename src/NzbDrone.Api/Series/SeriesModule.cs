@@ -45,7 +45,8 @@ namespace NzbDrone.Api.Series
                             SeriesExistsValidator seriesExistsValidator,
                             DroneFactoryValidator droneFactoryValidator,
                             SeriesAncestorValidator seriesAncestorValidator,
-                            ProfileExistsValidator profileExistsValidator
+                            ProfileExistsValidator profileExistsValidator,
+                            LanguageProfileExistsValidator languageProfileExistsValidator
             )
             : base(signalRBroadcaster)
         {
@@ -63,6 +64,7 @@ namespace NzbDrone.Api.Series
             DeleteResource = DeleteSeries;
 
             Validation.RuleBuilderExtensions.ValidId(SharedValidator.RuleFor(s => s.ProfileId));
+            Validation.RuleBuilderExtensions.ValidId(SharedValidator.RuleFor(s => s.LanguageProfileId));
 
             SharedValidator.RuleFor(s => s.Path)
                            .Cascade(CascadeMode.StopOnFirstFailure)
@@ -74,6 +76,7 @@ namespace NzbDrone.Api.Series
                            .When(s => !s.Path.IsNullOrWhiteSpace());
 
             SharedValidator.RuleFor(s => s.ProfileId).SetValidator(profileExistsValidator);
+            SharedValidator.RuleFor(s => s.LanguageProfileId).SetValidator(languageProfileExistsValidator);
 
             PostValidator.RuleFor(s => s.Path).IsValidPath().When(s => s.RootFolderPath.IsNullOrWhiteSpace());
             PostValidator.RuleFor(s => s.RootFolderPath).IsValidPath().When(s => s.Path.IsNullOrWhiteSpace());
