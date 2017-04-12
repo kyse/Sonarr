@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
-using NLog;
-using NzbDrone.Api.REST;
 using NzbDrone.Core.Datastore.Events;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.MediaFiles.Events;
 using NzbDrone.Core.Messaging.Events;
 using NzbDrone.Core.Tv;
 using NzbDrone.Core.DecisionEngine;
+using NzbDrone.Core.Exceptions;
 using NzbDrone.SignalR;
+using HttpStatusCode = System.Net.HttpStatusCode;
 
 namespace NzbDrone.Api.EpisodeFiles
 {
@@ -68,6 +68,12 @@ namespace NzbDrone.Api.EpisodeFiles
         private void DeleteEpisodeFile(int id)
         {
             var episodeFile = _mediaFileService.Get(id);
+
+            if (episodeFile == null)
+            {
+                throw new NzbDroneClientException(HttpStatusCode.NotFound, "Episode file not found");
+            }
+
             var series = _seriesService.GetSeries(episodeFile.SeriesId);
 
             _mediaFileDeletionService.DeleteEpisodeFile(series, episodeFile);

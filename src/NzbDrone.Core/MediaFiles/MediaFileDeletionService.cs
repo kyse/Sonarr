@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using NLog;
 using NzbDrone.Common.Disk;
@@ -43,12 +41,12 @@ namespace NzbDrone.Core.MediaFiles
 
             if (!_diskProvider.FolderExists(rootFolder))
             {
-                throw new NzbDroneClientException(HttpStatusCode.NotFound, "Series' root folder ({0}) doesn't exist.", rootFolder);
+                throw new NzbDroneClientException(HttpStatusCode.Conflict, "Series' root folder ({0}) doesn't exist.", rootFolder);
             }
 
             if (_diskProvider.GetDirectories(rootFolder).Empty())
             {
-                throw new NzbDroneClientException(HttpStatusCode.NotFound, "Series' root folder ({0}) is empty.", rootFolder);
+                throw new NzbDroneClientException(HttpStatusCode.Conflict, "Series' root folder ({0}) is empty.", rootFolder);
             }
 
             if (_diskProvider.FolderExists(series.Path) && _diskProvider.FileExists(fullPath))
@@ -56,7 +54,16 @@ namespace NzbDrone.Core.MediaFiles
                 _logger.Info("Deleting episode file: {0}", fullPath);
 
                 var subfolder = _diskProvider.GetParentFolder(series.Path).GetRelativePath(_diskProvider.GetParentFolder(fullPath));
-                _recycleBinProvider.DeleteFile(fullPath, subfolder);
+
+                try
+                {
+                    _recycleBinProvider.DeleteFile(fullPath, subfolder);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e, "Unable to delete episode file");
+                    throw new NzbDroneClientException(HttpStatusCode.InternalServerError, "Unable to delete episode file");
+                }
             }
             
             // Delete the episode file from the database to clean it up even if the file was already deleted
