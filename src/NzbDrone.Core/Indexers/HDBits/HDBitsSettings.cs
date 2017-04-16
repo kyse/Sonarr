@@ -14,13 +14,14 @@ namespace NzbDrone.Core.Indexers.HDBits
         }
     }
 
-    public class HDBitsSettings : IProviderConfig
+    public class HDBitsSettings : IProviderConfig, ITorrentIndexerSettings
     {
         private static readonly HDBitsSettingsValidator Validator = new HDBitsSettingsValidator();
 
         public HDBitsSettings()
         {
             BaseUrl = "https://hdbits.org";
+            MinimumSeeders = 1;
         }
 
         [FieldDefinition(0, Label = "Username")]
@@ -31,6 +32,9 @@ namespace NzbDrone.Core.Indexers.HDBits
 
         [FieldDefinition(2, Label = "API URL", Advanced = true, HelpText = "Do not change this unless you know what you're doing. Since your API key will be sent to that host.")]
         public string BaseUrl { get; set; }
+
+        [FieldDefinition(3, Type = FieldType.Textbox, Label = "Minimum Seeders", HelpText = "Minimum number of seeders required.", Advanced = true)]
+        public int MinimumSeeders { get; set; }
 
         public NzbDroneValidationResult Validate()
         {

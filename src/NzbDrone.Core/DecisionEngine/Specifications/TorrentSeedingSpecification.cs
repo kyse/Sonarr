@@ -32,13 +32,17 @@ namespace NzbDrone.Core.DecisionEngine.Specifications.Search
             }
 
             var indexer = _indexerFactory.Get(torrentInfo.IndexerId);
-            var minimumSeedersProperty = indexer.Settings.GetType().GetSimpleProperties().SingleOrDefault(s => s.Name == "MinimumSeeders");
-            var minimumSeeders = minimumSeedersProperty == null ? 1 : (int)minimumSeedersProperty.GetValue(indexer.Settings, null);
+            var torrentIndexerSettings = indexer.Settings as ITorrentIndexerSettings;
 
-            if (torrentInfo.Seeders.HasValue && torrentInfo.Seeders.Value < minimumSeeders)
+            if (torrentIndexerSettings != null)
             {
-                _logger.Debug("Not enough seeders: {0}. Minimum seeders: {1}", torrentInfo.Seeders, minimumSeeders);
-                return Decision.Reject("Not enough seeders: {0}. Minimum seeders: {1}", torrentInfo.Seeders, minimumSeeders);
+                var minimumSeeders = torrentIndexerSettings.MinimumSeeders;
+
+                if (torrentInfo.Seeders.HasValue && torrentInfo.Seeders.Value < minimumSeeders)
+                {
+                    _logger.Debug("Not enough seeders: {0}. Minimum seeders: {1}", torrentInfo.Seeders, minimumSeeders);
+                    return Decision.Reject("Not enough seeders: {0}. Minimum seeders: {1}", torrentInfo.Seeders, minimumSeeders);
+                }
             }
 
             return Decision.Accept();

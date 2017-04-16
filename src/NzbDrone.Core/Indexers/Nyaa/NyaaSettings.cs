@@ -14,7 +14,7 @@ namespace NzbDrone.Core.Indexers.Nyaa
         }
     }
 
-    public class NyaaSettings : IProviderConfig
+    public class NyaaSettings : IProviderConfig, ITorrentIndexerSettings
     {
         private static readonly NyaaSettingsValidator Validator = new NyaaSettingsValidator();
 
@@ -22,6 +22,7 @@ namespace NzbDrone.Core.Indexers.Nyaa
         {
             BaseUrl = "https://www.nyaa.se";
             AdditionalParameters = "&cats=1_37&filter=1";
+            MinimumSeeders = 1;
         }
 
         [FieldDefinition(0, Label = "Website URL")]
@@ -29,6 +30,9 @@ namespace NzbDrone.Core.Indexers.Nyaa
 
         [FieldDefinition(1, Label = "Additional Parameters", Advanced = true, HelpText = "Please note if you change the category you will have to add required/restricted rules about the subgroups to avoid foreign language releases.")]
         public string AdditionalParameters { get; set; }
+
+        [FieldDefinition(2, Type = FieldType.Textbox, Label = "Minimum Seeders", HelpText = "Minimum number of seeders required.", Advanced = true)]
+        public int MinimumSeeders { get; set; }
 
         public NzbDroneValidationResult Validate()
         {

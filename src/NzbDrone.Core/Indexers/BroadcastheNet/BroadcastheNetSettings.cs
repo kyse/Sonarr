@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using NzbDrone.Core.Annotations;
 using NzbDrone.Core.ThingiProvider;
 using NzbDrone.Core.Validation;
@@ -14,13 +14,14 @@ namespace NzbDrone.Core.Indexers.BroadcastheNet
         }
     }
 
-    public class BroadcastheNetSettings : IProviderConfig
+    public class BroadcastheNetSettings : IProviderConfig, ITorrentIndexerSettings
     {
         private static readonly BroadcastheNetSettingsValidator Validator = new BroadcastheNetSettingsValidator();
 
         public BroadcastheNetSettings()
         {
             BaseUrl = "http://api.broadcasthe.net/";
+            MinimumSeeders = 1;
         }
 
         [FieldDefinition(0, Label = "API URL", Advanced = true, HelpText = "Do not change this unless you know what you're doing. Since your API key will be sent to that host.")]
@@ -28,6 +29,9 @@ namespace NzbDrone.Core.Indexers.BroadcastheNet
 
         [FieldDefinition(1, Label = "API Key")]
         public string ApiKey { get; set; }
+
+        [FieldDefinition(2, Type = FieldType.Textbox, Label = "Minimum Seeders", HelpText = "Minimum number of seeders required.", Advanced = true)]
+        public int MinimumSeeders { get; set; }
 
         public NzbDroneValidationResult Validate()
         {

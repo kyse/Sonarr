@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using NzbDrone.Core.Annotations;
 using NzbDrone.Core.ThingiProvider;
 using NzbDrone.Core.Validation;
@@ -13,7 +13,7 @@ namespace NzbDrone.Core.Indexers.TorrentRss
         }
     }
 
-    public class TorrentRssIndexerSettings : IProviderConfig
+    public class TorrentRssIndexerSettings : IProviderConfig, ITorrentIndexerSettings
     {
         private static readonly TorrentRssIndexerSettingsValidator validator = new TorrentRssIndexerSettingsValidator();
 
@@ -21,6 +21,7 @@ namespace NzbDrone.Core.Indexers.TorrentRss
         {
             BaseUrl = string.Empty;
             AllowZeroSize = false;
+            MinimumSeeders = 1;
         }
 
         [FieldDefinition(0, Label = "Full RSS Feed URL")]
@@ -31,6 +32,9 @@ namespace NzbDrone.Core.Indexers.TorrentRss
 
         [FieldDefinition(2, Type = FieldType.Checkbox, Label = "Allow Zero Size", HelpText="Enabling this will allow you to use feeds that don't specify release size, but be careful, size related checks will not be performed.")]
         public bool AllowZeroSize { get; set; }
+
+        [FieldDefinition(3, Type = FieldType.Textbox, Label = "Minimum Seeders", HelpText = "Minimum number of seeders required.", Advanced = true)]
+        public int MinimumSeeders { get; set; }
 
         public NzbDroneValidationResult Validate()
         {
