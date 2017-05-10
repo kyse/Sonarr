@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Nancy;
@@ -49,7 +49,7 @@ namespace NzbDrone.Api.Frontend.Mappers
 
         public override bool CanHandle(string resourceUrl)
         {
-            return !resourceUrl.Contains(".") && !resourceUrl.StartsWith("/login");
+            return !resourceUrl.Contains(".") && !resourceUrl.StartsWith("/login") && !resourceUrl.StartsWith("/download/");
         }
 
         public override Response GetResponse(string resourceUrl)

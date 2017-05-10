@@ -1,10 +1,11 @@
-var reqres = require('../../reqres');
+﻿var reqres = require('../../reqres');
 var Marionette = require('marionette');
 var Backgrid = require('backgrid');
 var EpisodeFileModel = require('../../Series/EpisodeFileModel');
 var EpisodeFileCollection = require('../../Series/EpisodeFileCollection');
 var FileSizeCell = require('../../Cells/FileSizeCell');
 var QualityCell = require('../../Cells/QualityCell');
+var EpisodeFilenameCell = require('./EpisodeFilenameCell');
 var DeleteEpisodeFileCell = require('../../Cells/DeleteEpisodeFileCell');
 var NoFileView = require('./NoFileView');
 var LoadingView = require('../../Shared/LoadingView');
@@ -19,9 +20,9 @@ module.exports = Marionette.Layout.extend({
 
     columns : [
         {
-            name     : 'path',
+            name     : 'this',
             label    : 'Path',
-            cell     : 'string',
+            cell     : EpisodeFilenameCell,
             sortable : false
         },
         {
